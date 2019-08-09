@@ -74,7 +74,7 @@ $(document).ready(function () {
     });
 
     /*** The code here is what I added ***/
-    function vPathArrayTorPathArray (vPathArray) {
+    function vPathTorPath (vPathArray) {
         let rPathArray = []
         vPathArray.forEach(vPoint => {
             let rPoint = Position.toLatLng(map, vPoint[0], vPoint[1])
@@ -83,13 +83,14 @@ $(document).ready(function () {
         return rPathArray
     }
   
-    async function showPath (url) {
+    async function showPaths (url) {
         let res = await axios.get(url)
-        let vPathArray = res.data
-        var rPathArray = vPathArrayTorPathArray(vPathArray)
-        L.polyline(rPathArray).addTo(map)
+        let vPaths = res.data
+        vPaths.forEach(vPath => {
+            let rPath = vPathTorPath(vPath)
+            L.polyline(rPath).addTo(map)
+        })
     }
   
-    showPath('json/vpath1.json')
-    showPath('json/vpath2.json')
+    showPaths('json/vpaths.json')
 });
