@@ -73,23 +73,23 @@ $(document).ready(function () {
         }
     });
 
-   /*** The code here is what I added ***/
-   function vPathArrayTorPathArray (vPathArray) {
-    let rPathArray = []
-    vPathArray.forEach(vPoint => {
-      let rPoint = Position.toLatLng(map, vPoint[0], vPoint[1])
-      rPathArray.push([rPoint.lat, rPoint.lng])
-    })
-    return rPathArray
-  }
+    /*** The code here is what I added ***/
+    function vPathArrayTorPathArray (vPathArray) {
+        let rPathArray = []
+        vPathArray.forEach(vPoint => {
+            let rPoint = Position.toLatLng(map, vPoint[0], vPoint[1])
+            rPathArray.push([rPoint.lat, rPoint.lng])
+        })
+        return rPathArray
+    }
   
-  async function showPath(url) {
-      let res = await axios.get(url)
-      let vPathArray = res.data
-      var rPathArray = vPathArrayTorPathArray(vPathArray)
-      L.polyline(rPathArray).addTo(map)
-  }
+    async function showPath (url) {
+        let res = await axios.get(url)
+        let vPathArray = res.data
+        var rPathArray = vPathArrayTorPathArray(vPathArray)
+        L.polyline(rPathArray).addTo(map)
+    }
   
-  showPath('json/vpath1.json')
-  showPath('json/vpath2.json')
+    showPath('json/vpath1.json')
+    showPath('json/vpath2.json')
 });
