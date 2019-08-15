@@ -1,6 +1,9 @@
 'use strict';
 
 import {Position} from './model/Position.js';
+import {Path} from './model/Path.js';
+import {Areas} from './model/Areas.js';
+import {Area} from './model/Area.js';
 
 // Import controls
 import {CollectionControl} from './controls/collection_control.js';
@@ -74,23 +77,103 @@ $(document).ready(function () {
     });
 
     /*** The code here is what I added ***/
-    function vPathTorPath (vPathArray) {
-        let rPathArray = []
-        vPathArray.forEach(vPoint => {
-            let rPoint = Position.toLatLng(map, vPoint[0], vPoint[1])
-            rPathArray.push([rPoint.lat, rPoint.lng])
-        })
-        return rPathArray
-    }
-  
     async function showPaths (url) {
         let res = await axios.get(url)
-        let vPaths = res.data
-        vPaths.forEach(vPath => {
-            let rPath = vPathTorPath(vPath)
-            L.polyline(rPath).addTo(map)
-        })
+        let nodes = res.data.nodes
+        let connections = res.data.connections
+
+        let link = function (nodeId) {
+            for (let n = 0; n < connections.length; n++) {
+                let currNodeId = connections[n][0]
+                let nextNodeId = connections[n][1]
+                if (currNodeId == nodeId) {
+                    let path = new Path(map)
+                    path.add(new Position(nodes[currNodeId].x,nodes[currNodeId].y))
+                    path.add(new Position(nodes[nextNodeId].x,nodes[nextNodeId].y))
+                    map.addLayer(path.featureGroup)
+                    link(nextNodeId)
+                }
+            }
+        }
+
+        link(1)
     }
+
+    showPaths('json/res.json')
+
+/* ====================================================== */
+    // async function showPaths (url) {
+    //     let res = await axios.get(url)
+    //     let nodes = res.data.nodes
+    //     let connections = res.data.connections
+    //     let id1 = connections[0][0]
+    //     let id2 = connections[0][1]
+    //     let p1 = new Position(nodes[id1].x,nodes[id1].y)
+    //     let p2 = new Position(nodes[id2].x,nodes[id2].y)
+    //     let path = new Path(map)
+    //     path.add(p1)
+    //     path.add(p2)
+    //     map.addLayer(path.featureGroup)
+    // }
+
+    // showPaths('json/res.json')
+
+/* ====================================================== */
+    // let path1 = new Path(map)
+    // let pos11 = new Position(3274,3364,0)
+    // let pos12 = new Position(3124,3361,0)
+    // let pos13 = new Position(3017,3390,0)
+    // path1.add(pos11)
+    // path1.add(pos12)
+    // path1.add(pos13)
+    // map.addLayer(path1.featureGroup)
+
+    // let path2 = new Path(map)
+    // let pos21 = new Position(3275,3276,0)
+    // let pos22 = new Position(3259,3213,0)
+    // let pos23 = new Position(3204,3211,0)
+    // let pos24 = new Position(3194,3273,0)
+    // let pos25 = new Position(3113,3272,0)
+    // let pos26 = new Position(3085,3232,0)
+    // path2.add(pos21)
+    // path2.add(pos22)
+    // path2.add(pos23)
+    // path2.add(pos24)
+    // path2.add(pos25)
+    // path2.add(pos26)
+    // map.addLayer(path2.featureGroup)
+
+    // let areas = new Areas(map)
+    // let area1 = new Area(
+    //     new Position(3303,3393,0),
+    //     new Position(3369,3345,0)
+    // )
+    // let area2 = new Area(
+    //     new Position(2911,3392,0),
+    //     new Position(2978,3328,0)
+    // )
+    // areas.add(area1)
+    // areas.add(area2)
+    // map.addLayer(areas.featureGroup)
+
+/* ====================================================== */
+    // function vPathTorPath (vPathArray) {
+    //     let rPathArray = []
+    //     vPathArray.forEach(vPoint => {
+    //         let rPoint = Position.toLatLng(map, vPoint[0], vPoint[1])
+    //         rPathArray.push([rPoint.lat, rPoint.lng])
+    //     })
+    //     return rPathArray
+    // }
   
-    showPaths('json/vpaths.json')
+    // async function showPaths (url) {
+    //     let res = await axios.get(url)
+    //     let vPaths = res.data
+    //     vPaths.forEach(vPath => {
+    //         let rPath = vPathTorPath(vPath)
+    //         L.polyline(rPath, {color: '#00ff00'}).addTo(map)
+    //     })
+    // }
+  
+    // showPaths('json/vpaths.json')
 });
