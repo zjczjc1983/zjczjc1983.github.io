@@ -83,11 +83,11 @@ $(document).ready(function () {
         let connections = res.data.connections
 
         let link = function (nodeId) {
+            let path = new Path(map)
             for (let n = 0; n < connections.length; n++) {
                 let currNodeId = connections[n][0]
                 let nextNodeId = connections[n][1]
                 if (currNodeId == nodeId) {
-                    let path = new Path(map)
                     path.add(new Position(nodes[currNodeId].x,nodes[currNodeId].y))
                     path.add(new Position(nodes[nextNodeId].x,nodes[nextNodeId].y))
                     map.addLayer(path.featureGroup)
