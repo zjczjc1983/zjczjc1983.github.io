@@ -84,14 +84,28 @@ $(document).ready(function () {
 
         let link = function (nodeId) {
             let path = new Path(map)
+            let areas = new Areas(map)
             for (let n = 0; n < connections.length; n++) {
                 let currNodeId = connections[n][0]
                 let nextNodeId = connections[n][1]
                 if (currNodeId == nodeId) {
-                    path.add(new Position(nodes[currNodeId].x,nodes[currNodeId].y))
-                    path.add(new Position(nodes[nextNodeId].x,nodes[nextNodeId].y))
-                    map.addLayer(path.featureGroup)
-                    link(nextNodeId)
+                    switch (nodes[nextNodeId].type) {
+                        case 'point':
+                            path.add(new Position(nodes[currNodeId].x,nodes[currNodeId].y))
+                            path.add(new Position(nodes[nextNodeId].x,nodes[nextNodeId].y))
+                            map.addLayer(path.featureGroup)
+                            link(nextNodeId)
+                            break;
+                        case 'area':
+                            areas.add(
+                                new Area(
+                                    new Position(nodes[nextNodeId].x1,nodes[nextNodeId].y1),
+                                    new Position(nodes[nextNodeId].x2,nodes[nextNodeId].y2)
+                            ))
+                            map.addLayer(areas.featureGroup)
+                            // link(nextNodeId)
+                            break;
+                    }
                 }
             }
         }
